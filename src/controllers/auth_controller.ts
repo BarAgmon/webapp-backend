@@ -5,11 +5,14 @@ import jwt from 'jsonwebtoken';
 import { Document } from 'mongoose';
 
 const register = async (req: Request, res: Response) => {
+    const MIN_PASSWORD_LEN = 6;
     const email = req.body.email;
     const password = req.body.password;
     const imgUrl = req.body.imgUrl;
     if (!email || !password) {
         return res.status(400).send("missing email or password");
+    } else if(email.length < MIN_PASSWORD_LEN) {
+        return res.status(400).send("Invalid password length");
     }
     try {
         const rs = await User.findOne({ 'email': email });
