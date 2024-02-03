@@ -20,6 +20,7 @@ const initApp = (): Promise<Express> => {
         res.header("Access-Control-Allow-Methods", "*");
         res.header("Access-Control-Allow-Headers", "*");
         next();
+      })
       app.use("/auth", authRoute);
       resolve(app);
     });
