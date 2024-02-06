@@ -16,7 +16,8 @@ afterAll(async () => {
 
 describe("File Tests", () => {
     test("upload file", async () => {
-        const filePath = `${__dirname}/coin.png`;
+        const currDir = `${__dirname}`;
+        const filePath = `${currDir}/coin.png`;
         console.log(filePath);
 
         try {

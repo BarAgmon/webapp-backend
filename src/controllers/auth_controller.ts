@@ -9,9 +9,9 @@ const register = async (req: Request, res: Response) => {
     const email = req.body.email;
     const password = req.body.password;
     const imgUrl = req.body.imgUrl;
-    if (!email || !password) {
-        return res.status(400).send("missing email or password");
-    } else if(email.length < MIN_PASSWORD_LEN) {
+    if (!email || !password || !imgUrl) {
+        return res.status(400).send("missing fileds");
+    } else if(password.length < MIN_PASSWORD_LEN) {
         return res.status(400).send("Invalid password length");
     }
     try {
@@ -36,7 +36,7 @@ const register = async (req: Request, res: Response) => {
                 ...tokens
             })
     } catch (err) {
-        return res.status(400).send("error missing email or password");
+        return res.status(500).send("An error occurred during registration");
     }
 }
 
@@ -59,7 +59,7 @@ const login = async (req: Request, res: Response) => {
         const tokens = await generateTokens(user)
         return res.status(200).send(tokens);
     } catch (err) {
-        return res.status(400).send("error missing email or password");
+        return res.status(500).send("An error occurred during registration");
     }
 }
 
@@ -84,7 +84,7 @@ const logout = async (req: Request, res: Response) => {
                 return res.sendStatus(200);
             }
         } catch (err) {
-            res.sendStatus(401).send(err.message);
+            res.sendStatus(500).send(err.message);
         }
     });
 }
