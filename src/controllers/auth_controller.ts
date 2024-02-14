@@ -13,7 +13,10 @@ const googleSignin = async (req: Request, res: Response) => {
             idToken: req.body.credential,
             audience: process.env.GOOGLE_CLIENT_ID,
         });
-        const payload = ticket.getPayload();
+        // This line extracts the payload from the ticket. 
+        // The payload contains information about the user, 
+        // such as their email and profile picture URL.
+        const payload = ticket.getPayload(); 
         const email = payload?.email;
         if (email != null) {
             let user = await User.findOne({ 'email': email });
@@ -83,7 +86,7 @@ const login = async (req: Request, res: Response) => {
         return res.status(400).send("missing email or password");
     }
     try {
-        const user = await User.findOne({ 'email': email });
+        let user = await User.findOne({ 'email': email });
         if (user == null) {
             return res.status(401).send("email or password incorrect");
         }
@@ -93,7 +96,8 @@ const login = async (req: Request, res: Response) => {
         }
 
         const tokens = await generateTokens(user)
-        return res.status(200).send(tokens);
+        user = user["_doc"]
+        return res.status(200).send({...tokens, ...user});
     } catch (err) {
         return res.status(500).send("An error occurred during registration");
     }
