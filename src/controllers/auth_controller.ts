@@ -3,6 +3,45 @@ import User, { IUser } from '../models/user_model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Document } from 'mongoose';
+import { OAuth2Client } from 'google-auth-library';
+
+const client = new OAuth2Client();
+const googleSignin = async (req: Request, res: Response) => {
+    console.log(req.body);
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: req.body.credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        // This line extracts the payload from the ticket. 
+        // The payload contains information about the user, 
+        // such as their email and profile picture URL.
+        const payload = ticket.getPayload(); 
+        const email = payload?.email;
+        if (email != null) {
+            let user = await User.findOne({ 'email': email });
+            if (user == null) {
+                user = await User.create(
+                    {
+                        'email': email,
+                        'password': '0',
+                        'imgUrl': payload?.picture
+                    });
+            }
+            const tokens = await generateTokens(user)
+            res.status(200).send(
+                {
+                    email: user.email,
+                    _id: user._id,
+                    imgUrl: user.imgUrl,
+                    ...tokens
+                })
+        }
+    } catch (err) {
+        return res.status(400).send(err.message);
+    }
+
+}
 
 const register = async (req: Request, res: Response) => {
     const MIN_PASSWORD_LEN = 6;
@@ -47,7 +86,7 @@ const login = async (req: Request, res: Response) => {
         return res.status(400).send("missing email or password");
     }
     try {
-        const user = await User.findOne({ 'email': email });
+        let user = await User.findOne({ 'email': email });
         if (user == null) {
             return res.status(401).send("email or password incorrect");
         }
@@ -57,7 +96,8 @@ const login = async (req: Request, res: Response) => {
         }
 
         const tokens = await generateTokens(user)
-        return res.status(200).send(tokens);
+        user = user["_doc"]
+        return res.status(200).send({...tokens, ...user});
     } catch (err) {
         return res.status(500).send("An error occurred during registration");
     }
@@ -141,5 +181,6 @@ export default {
     register,
     login,
     logout,
-    refresh
+    refresh,
+    googleSignin
 }

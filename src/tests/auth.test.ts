@@ -1,10 +1,10 @@
 import request from "supertest";
 import initApp from "../app";
 import mongoose from "mongoose";
-import { Express } from "express";
-import User from "../models/user_model";
+import { Express, Response } from "express";
+import User, { IUser } from "../models/user_model";
 import jwt from 'jsonwebtoken';
-
+import { OAuth2Client} from "google-auth-library";
 let app: Express;
 const user = {
   email: "testUser@test.com",
@@ -22,7 +22,6 @@ afterAll(async () => {
 });
 
 let accessToken: string;
-
 
 describe("Auth tests", () => {
   test("Test Register", async () => {
@@ -94,11 +93,39 @@ describe("Auth tests", () => {
       .set('Authorization', 'Bearer invalidToken');
     expect(response.statusCode).toBe(401);
   });
-  // test("Simulate server error during logout", async () => {
-  //   jest.spyOn(User, "findOne").mockRejectedValueOnce(new Error('Unexpected error'));
-  //   const refreshToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCK9.eyJfaWQiOiI2NWMxZmRkNWIzZDc0MGUxN2FkMGU0ZGUiLCJpYXQiOjE3MDcyMTIyNDV9.4c2IwnntCwHl2p_BkK0T6vj6bhpOkhpqu5OmMAsAZeQ"
-  //   const response = await request(app).post("/auth/logout")
-  //   .set('Authorization', `Bearer ${refreshToken}`);
-  //   expect(response.statusCode).toBe(500);
+
+
+  test('Successfully sign in an existing user', async () => {
+    const client = new OAuth2Client();
+    const user: IUser = { password: "0", email: 'test@example.com', _id: 'test-id', imgUrl: 'test-picture-url' }
+    jest.spyOn(client, 'verifyIdToken').mockImplementation(() =>
+      ({getPayload: ()=> (user)}));
+    
+    const req = { body: { credential: 'test-credential' } };
+
+    jest.spyOn(User, "findOne").mockResolvedValueOnce(user);
+    const mockedCreateFunc = User.create as jest.Mock;
+    const response = await request(app)
+    .post("/google")
+    .send({req})
+    expect(mockedCreateFunc).toHaveBeenCalledTimes(1);
+    expect(response.status).toHaveBeenCalledWith(200);
+  });
+  
+  // test('Successfully sign in non existing user', async () => {
+  //   const client = new OAuth2Client();
+  //   const user: IUser = { password: "0", email: 'test@example.com', _id: 'test-id', imgUrl: 'test-picture-url' }
+  //   jest.spyOn(client, 'verifyIdToken').mockImplementation(() =>
+  //     ({getPayload: ()=> (user)}));
+    
+  //   const req = { body: { credential: 'test-credential' } };
+
+  //   jest.spyOn(User, "findOne").mockResolvedValueOnce({});
+  //   const mockedCreateFunc = User.create as jest.Mock;
+  //   const response = await request(app)
+  //   .post("/google")
+  //   .send({req})
+  //   expect(mockedCreateFunc).toHaveBeenCalledTimes(2);
+  //   expect(response.status).toHaveBeenCalledWith(200);
   // });
  });
