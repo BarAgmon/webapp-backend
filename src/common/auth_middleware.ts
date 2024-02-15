@@ -13,6 +13,8 @@ const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => 
         console.log(err);
         if (err) return res.sendStatus(401);
         req.user = user as { _id: string };
+        
+        // Pass control to the next middleware in the stack if the token is successfully verified
         next();
     });
 }

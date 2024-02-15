@@ -28,6 +28,7 @@ import authController from "../controllers/auth_controller";
 *       required:
 *         - email
 *         - password
+*         - imgUrl
 *       properties:
 *         email:
 *           type: string
@@ -35,9 +36,13 @@ import authController from "../controllers/auth_controller";
 *         password:
 *           type: string
 *           description: The user password
+*         imgeUrl:
+*           type: string
+*           description: The url of the profile image
 *       example:
 *         email: 'bob@gmail.com'
 *         password: '123456'
+*         imgUrl: 'https://fakePath/fake.png'
 */
 
 /**
@@ -87,7 +92,7 @@ router.post("/register", authController.register);
 * @swagger
 * /auth/login:
 *   post:
-*     summary: registers a new user
+*     summary: login with an email and password
 *     tags: [Auth]
 *     requestBody:
 *       required: true
@@ -143,5 +148,43 @@ router.post("/logout", authController.logout);
 
 router.get("/refresh", authController.refresh);
 
+/**
+* @swagger
+* /auth/google:
+*   post:
+*     summary: Sign in using Google
+*     description: Signs in the user by verifying the Google ID token provided in the request body.
+*     tags: [Auth]
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               credential:
+*                 type: string
+*                 description: Google ID token.
+*     responses:
+*       200:
+*         description: Successfully signed in with Google. Returns user info along with access and refresh tokens.
+*         content:
+*           application/json:
+*             schema:
+*               allOf:
+*                 - $ref: '#/components/schemas/User'
+*                 - type: object
+*                   properties:
+*                     accessToken:
+*                       type: string
+*                       description: JWT access token for authorization.
+*                     refreshToken:
+*                       type: string
+*                       description: JWT refresh token for getting new access tokens.
+*       400:
+*         description: Bad request. Possible issues with the provided ID token.
+*       401:
+*         description: Unauthorized. Token is invalid or not provided.
+*/
 router.post("/google", authController.googleSignin);
 export default router;

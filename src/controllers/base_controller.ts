@@ -11,11 +11,11 @@ export class BaseController<ModelType>{
     async get(req: Request, res: Response) {
         try {
             if (req.query.name) {
-                const students = await this.model.find({ name: req.query.name });
-                res.send(students);
+                const objects = await this.model.find({ name: req.query.name });
+                res.send(objects);
             } else {
-                const students = await this.model.find();
-                res.send(students);
+                const objects = await this.model.find();
+                res.send(objects);
             }
         } catch (err) {
             res.status(500).json({ message: err.message });
@@ -24,8 +24,8 @@ export class BaseController<ModelType>{
 
     async getById(req: Request, res: Response) {
         try {
-            const student = await this.model.findById(req.params.id);
-            res.send(student);
+            const object = await this.model.findById(req.params.id);
+            res.send(object);
         } catch (err) {
             res.status(500).json({ message: err.message });
         }
@@ -41,10 +41,25 @@ export class BaseController<ModelType>{
         }
     }
 
-    putById(req: Request, res: Response) {
+    async updateById(req: Request, res: Response) {
+        try {
+            const newObject = await this.model.findOneAndUpdate({ _id: req["user"]["_id"]}, req.body, {new: true});
+            if (!newObject) {
+                return res.status(404).send("Document not found.");
+            }
+            res.status(200).send(newObject);
+        } catch(err) {
+            res.status(406).send("fail: " + err.message);
+        }
     }
 
-    deleteById(req: Request, res: Response) {
+    async deleteById(req: Request, res: Response) {
+        try {
+            const object = await this.model.deleteOne({ _id: req["user"]["_id"]});
+            res.status(200).send("deleted successfully ");
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
     }
 }
 
