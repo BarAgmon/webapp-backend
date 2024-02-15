@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import authRoute from "./routes/auth_routes";
 import fileRoute from "./routes/file_routes";
+import userRoute from "./routes/user_route";
 
 const initApp = (): Promise<Express> => {
   const promise = new Promise<Express>((resolve) => {
@@ -24,6 +25,7 @@ const initApp = (): Promise<Express> => {
       })
       app.use("/auth", authRoute);
       app.use("/file", fileRoute);
+      app.use("/user", userRoute);
       app.use("/public", express.static("public"));
       resolve(app);
     });
