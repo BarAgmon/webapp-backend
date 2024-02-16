@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Model } from "mongoose";
+import bcrypt from 'bcrypt';
 
 export class BaseController<ModelType>{
 
@@ -43,6 +44,11 @@ export class BaseController<ModelType>{
 
     async updateById(req: Request, res: Response) {
         try {
+            if (req.body["password"]){
+                const salt = await bcrypt.genSalt(10);
+                const encryptedPassword = await bcrypt.hash(req.body["password"], salt);
+                req.body["password"] = encryptedPassword
+            }
             const newObject = await this.model.findOneAndUpdate({ _id: req["user"]["_id"]}, req.body, {new: true});
             if (!newObject) {
                 return res.status(404).send("Document not found.");
