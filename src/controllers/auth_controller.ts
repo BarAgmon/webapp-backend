@@ -149,18 +149,18 @@ const generateTokens = async (user: Document & IUser) => {
 const refresh = async (req: Request, res: Response) => {
     const authHeader = req.headers['authorization'];
     const refreshToken = authHeader && authHeader.split(' ')[1]; // Bearer <token>
-    if (refreshToken == null) return res.sendStatus(401);
+    if (refreshToken == null) return res.sendStatus(403);
     jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, async (err, user: { '_id': string }) => {
         if (err) {
             console.log(err);
             return res.sendStatus(401);
         }
         try {
-            const userDb = await User.findOne({ '_id': user._id });
-            if (!userDb.refreshTokens || !userDb.refreshTokens.includes(refreshToken)) {
+            const userDb = await User.findOne({ _id: user._id});
+            if (!userDb["_doc"]["refreshTokens"] || !userDb["_doc"]["refreshTokens"].includes(refreshToken)) {
                 userDb.refreshTokens = [];
                 await userDb.save();
-                return res.sendStatus(401);
+                return res.sendStatus(403);
             }
             const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
             const newRefreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET);
@@ -169,10 +169,10 @@ const refresh = async (req: Request, res: Response) => {
             await userDb.save();
             return res.status(200).send({
                 'accessToken': accessToken,
-                'refreshToken': refreshToken
+                'refreshToken': newRefreshToken
             });
         } catch (err) {
-            res.sendStatus(401).send(err.message);
+            res.sendStatus(403).send(err.message);
         }
     });
 }
