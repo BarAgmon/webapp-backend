@@ -153,7 +153,7 @@ const refresh = async (req: Request, res: Response) => {
     jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, async (err, user: { '_id': string }) => {
         if (err) {
             console.log(err);
-            return res.sendStatus(401);
+            return res.sendStatus(403);
         }
         try {
             const userDb = await User.findOne({ _id: user._id});
