@@ -9,39 +9,6 @@ export class BaseController<ModelType>{
         this.model = model;
     }
 
-    async get(req: Request, res: Response) {
-        try {
-            if (req.query.name) {
-                const objects = await this.model.find({ name: req.query.name });
-                res.send(objects);
-            } else {
-                const objects = await this.model.find();
-                res.send(objects);
-            }
-        } catch (err) {
-            res.status(500).json({ message: err.message });
-        }
-    }
-
-    async getById(req: Request, res: Response) {
-        try {
-            const object = await this.model.findById(req.params.id);
-            res.send(object);
-        } catch (err) {
-            res.status(500).json({ message: err.message });
-        }
-    }
-
-    async post(req: Request, res: Response) {
-        try {
-            const obj = await this.model.create(req.body);
-            res.status(201).send(obj);
-        } catch (err) {
-            console.log(err);
-            res.status(406).send("fail: " + err.message);
-        }
-    }
-
     async updateById(req: Request, res: Response) {
         try {
             if (req.body["password"]){
@@ -73,4 +40,38 @@ const createController = <ModelType>(model: Model<ModelType>) => {
     return new BaseController<ModelType>(model);
 }
 
+
 export default createController;
+
+    // async get(req: Request, res: Response) {
+    //     try {
+    //         if (req.query.name) {
+    //             const objects = await this.model.find({ name: req.query.name });
+    //             res.send(objects);
+    //         } else {
+    //             const objects = await this.model.find();
+    //             res.send(objects);
+    //         }
+    //     } catch (err) {
+    //         res.status(500).json({ message: err.message });
+    //     }
+    // }
+
+    // async getById(req: Request, res: Response) {
+    //     try {
+    //         const object = await this.model.findById(req.params.id);
+    //         res.send(object);
+    //     } catch (err) {
+    //         res.status(500).json({ message: err.message });
+    //     }
+    // }
+
+    // async post(req: Request, res: Response) {
+    //     try {
+    //         const obj = await this.model.create(req.body);
+    //         res.status(201).send(obj);
+    //     } catch (err) {
+    //         console.log(err);
+    //         res.status(406).send("fail: " + err.message);
+    //     }
+    // }
