@@ -11,8 +11,13 @@ const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => 
     if (token == null) return res.sendStatus(403);
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         console.log(err);
-        if (err?.name == "TokenExpiredError") return res.sendStatus(401);
-        else if (err) return res.sendStatus(403);
+        console.log(err?.name == "TokenExpiredError")
+        if (err?.name == "TokenExpiredError"){
+            return res.sendStatus(401);
+        }
+        if (err) {
+            return res.sendStatus(403);
+        }
         req.user = user as { _id: string };
         
         // Pass control to the next middleware in the stack if the token is successfully verified

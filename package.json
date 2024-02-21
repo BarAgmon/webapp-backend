@@ -4,9 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "tsc && jest --detectOpenHandles --forceExit --coverage",
-    "testFile": "tsc && jest --detectOpenHandles --forceExit ./src/tests/file.test.ts",
-    "testAuth": "tsc && jest --detectOpenHandles --forceExit ./src/tests/auth.test.ts",
+    "test": "tsc && jest --detectOpenHandles --forceExit --coverage --setupFiles dotenv/config",
+    "testFile": "tsc && jest --detectOpenHandles --forceExit ./src/tests/file.test.ts --setupFiles dotenv/config",
+    "testAuth": "tsc && jest --detectOpenHandles --forceExit ./src/tests/auth.test.ts --setupFiles dotenv/config",
     "start": "tsc && node ./dist/src/server.js",
     "dev": "nodemon ./src/server.ts",
     "prod": "cp .envprod .env && tsc -p tsconfig_prod.json && pm2 restart ecosystem.config.js --env production"

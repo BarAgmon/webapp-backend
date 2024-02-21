@@ -22,6 +22,7 @@ export class BaseController<ModelType>{
             }
             res.status(200).send(newObject);
         } catch(err) {
+            console.log(err.message)
             res.status(406).send("fail: " + err.message);
         }
     }

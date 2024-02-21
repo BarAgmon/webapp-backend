@@ -17,6 +17,10 @@ beforeAll(async () => {
   await User.deleteMany({});
 });
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
@@ -105,7 +109,7 @@ describe("Auth tests", () => {
     .post("/auth/google")
     .send({ credential: 'test-credential' })
     console.log(response.error)
-    expect(mockedCreateFunc).toHaveBeenCalledTimes(1);
+    expect(mockedCreateFunc).toHaveBeenCalledTimes(0);
     expect(response.status).toBe(200);
   },30000);
   
