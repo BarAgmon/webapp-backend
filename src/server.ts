@@ -27,8 +27,8 @@ initApp().then((app) => {
   } else {
     console.log('PRODUCTION');
     const options2 = {
-      key: fs.readFileSync('../client-key.pem'),
-      cert: fs.readFileSync('../client-cert.pem')
+      key: fs.readFileSync('/home/st111/cert/server.key'),
+      cert: fs.readFileSync('/home/st111/cert/server.crt')
     };
     https.createServer(options2, app).listen(process.env.HTTPS_PORT);
   }
