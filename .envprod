@@ -1,7 +1,7 @@
-PORT = 80
-HTTPS_PORT = 443
-DB_URL = 
+PORT = 443
+DB_URL = mongodb://localhost/treasure
 JWT_SECRET = 
 JWT_REFRESH_SECRET = 
-JWT_EXPIRATION = 
-SERVER_URL = 
+JWT_EXPIRATION = 24h
+SERVER_URL = https://node27.cs.colman.ac.il/
+GOOGLE_CLIENT_ID = 461532925096-8menppatsj474jdt1qriqf23rthm8cu3.apps.googleusercontent.com
