@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 export interface IComment {
-  user: mongoose.Schema.Types.ObjectId;
+  user: string;
   comment: string;
 }
 
@@ -9,7 +9,8 @@ export interface IPost {
   user: mongoose.Schema.Types.ObjectId;
   createdAt: Date;
   content: string;
-  imgUrl: string;
+  imgUrl?: string;
+  _id?: string;
   like: string[];
   dislike: string[];
   comments: IComment[];
@@ -40,7 +41,7 @@ const postSchema = new mongoose.Schema<IPost>({
   comments: [
     {
       user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true,
       },
       comment: {

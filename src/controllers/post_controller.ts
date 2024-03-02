@@ -152,8 +152,7 @@ const dislikePost = async (req, res) => {
 
 const commentOnPost = async (req, res) => {
     try {
-        const user = req["user"];
-        const { postId, comment } = req.body;
+        const { postId, comment, user } = req.body;
         const commentObj: IComment = { user, comment };
         const post = await Post.findById(postId);
         await checkPostExists(post, postId);
