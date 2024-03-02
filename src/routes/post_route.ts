@@ -195,6 +195,7 @@ router.put("/dislike", authMiddleware, postController.dislikePost);
 *       required:
 *         - postId
 *         - comment
+*         - user
 *       properties:
 *         postId:
 *           type: string
@@ -202,13 +203,18 @@ router.put("/dislike", authMiddleware, postController.dislikePost);
 *         comment:
 *           type: string
 *           description: The comment string
+*         user:
+*           type: string
+*           description: The user string
 *       example:
 *         postId: 1234567abc
+*         comment: nice post
+*         user: some_user
 */
 
 /**
 * @swagger
-* /post/like:
+* /post/comment:
 *   put:
 *     summary: Comment on a post
 *     tags: [Post]
