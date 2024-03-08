@@ -12,7 +12,6 @@ export interface IPost {
   imgUrl?: string;
   _id?: string;
   like: string[];
-  dislike: string[];
   comments: IComment[];
 }
 
@@ -33,9 +32,6 @@ const postSchema = new mongoose.Schema<IPost>({
     type: String,
   },
   like: {
-    type: [String],
-  },
-  dislike: {
     type: [String],
   },
   comments: [

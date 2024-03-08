@@ -16,7 +16,7 @@ const createPost = async (req: Request, res: Response) => {
     const user = req["user"];
     let { imgUrl, content } = req.body;
     if (!imgUrl || !content) {
-        return res.status(400).send("missing fileds");
+        return res.status(400).send("missing fields");
     }
     try {
     const newPost = await Post.create(
@@ -112,37 +112,11 @@ const likePost = async (req, res) => {
     await checkPostExists(post, postId);
     const userId = user["_id"]
     if (!post.like.includes(userId)) {
-        if (post.dislike.includes(userId)) {
-        await post.updateOne({ $pull: { dislike: userId } });
-        }
         await post.updateOne({ $push: { like: userId } });
         return res.status(200).json("Post has been liked");
     } else {
         await post.updateOne({ $pull: { like: userId } });
         return res.status(200).json("Post has been unlike");
-    }
-
-    } catch (error) {
-        return res.status(500).json("Internal server error: " + error);
-    }
-};
-
-const dislikePost = async (req, res) => {
-    try {
-    const user = req["user"];
-    const { postId } = req.body;
-    const post = await Post.findById(postId);
-    await checkPostExists(post, postId);
-    const userId = user["_id"]
-    if (!post.dislike.includes(userId)) {
-        if (post.like.includes(userId)) {
-            await post.updateOne({ $pull: { like: userId } });
-        }
-        await post.updateOne({ $push: { dislike: userId } });
-        return res.status(200).json("Post has been disliked");
-    } else {
-        await post.updateOne({ $pull: { dislike: userId } });
-        return res.status(200).json("Post has been undislike");
     }
 
     } catch (error) {
@@ -195,7 +169,6 @@ export default {
     updatePost,
     getMyPosts,
     likePost,
-    dislikePost,
     commentOnPost,
     deletePost,
     getAllPosts

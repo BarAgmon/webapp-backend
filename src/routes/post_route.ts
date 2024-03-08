@@ -165,29 +165,6 @@ router.get("/myPosts", authMiddleware, postController.getMyPosts);
 router.put("/like", authMiddleware, postController.likePost);
 /**
 * @swagger
-* /post/dislike:
-*   put:
-*     summary: Dislike a post
-*     tags: [Post]
-*     security:
-*       - bearerAuth: []
-*     requestBody:
-*       required: true
-*       content:
-*         application/json:
-*           schema:
-*             $ref: '#/components/schemas/PostID'
-*     responses:
-*       200:
-*         description: The disliked post
-*         content:
-*           application/json:
-*             schema:
-*               type: string
-*/
-router.put("/dislike", authMiddleware, postController.dislikePost);
-/**
-* @swagger
 * components:
 *   schemas:
 *     PostComment:
