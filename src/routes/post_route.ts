@@ -254,5 +254,44 @@ router.delete("/delete", authMiddleware, postController.deletePost);
 *                 $ref: '#/components/schemas/UpdatePost'
 */
 router.get("/fetch", authMiddleware, postController.getAllPosts);
+/**
+* @swagger
+* components:
+*   schemas:
+*     PostById:
+*       type: object
+*       required:
+*         - postId
+*       post:
+*         postId:
+*           type: string
+*           description: The post id
+*       example:
+*         postId: 1234567abc
+*/
+/**
+* @swagger
+* /post/byId:
+*   get:
+*     summary: Get post by id
+*     tags: [Post]
+*     security:
+*       - bearerAuth: []
+*     parameters:
+*       - in: query
+*         name: postId
+*         schema:
+*           type: string
+*         required: true
+*         description: The post id
+*     responses:
+*       200:
+*         description: The new post
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/components/schemas/PostById'
+*/
+router.get("/byId", authMiddleware, postController.getPostById);
 
 export default router;

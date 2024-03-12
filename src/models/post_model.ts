@@ -9,6 +9,7 @@ export interface IPost {
   user: mongoose.Schema.Types.ObjectId;
   createdAt: Date;
   content: string;
+  userName: String;
   imgUrl?: string;
   _id?: string;
   like: string[];
@@ -20,6 +21,10 @@ const postSchema = new mongoose.Schema<IPost>({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "user",
+  },
+  userName: {
+    type: String,
+    required: true,
   },
   createdAt: {
     type: Date,

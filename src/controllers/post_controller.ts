@@ -19,19 +19,22 @@ const createPost = async (req: Request, res: Response) => {
         return res.status(400).send("missing fields");
     }
     try {
-    const newPost = await Post.create(
-        {
-            'content': content,
-            'createdAt': new Date(),
-            'user': user,
-            'imgUrl': imgUrl
-        });
-    res.status(201).send(
-        {
-            content: newPost.content,
-            _id: newPost._id,
-            imgUrl: newPost.imgUrl,
-        })
+        let postUser = await User.findById(user["_id"]);
+        const newPost = await Post.create(
+            {
+                'content': content,
+                'createdAt': new Date(),
+                'user': user,
+                'imgUrl': imgUrl,
+                'userName': postUser.email.split('@')[0]
+            });
+        res.status(201).send(
+            {
+                content: newPost.content,
+                _id: newPost._id,
+                imgUrl: newPost.imgUrl,
+                userName: newPost.userName,
+            })
     } catch (error) {
         return res.status(500).json("Internal server error: " + error);
     }
@@ -164,6 +167,16 @@ const getAllPosts = async (req, res) => {
     }
 };
 
+const getPostById = async (req, res) => {
+    try {
+        const { postId } = req.query;
+        const post = await Post.findById(postId);``
+        return res.status(200).send(post);
+    } catch (error) {
+        return res.status(500).json("Internal server error: " + error);
+    }
+};
+
 export default {
     createPost,
     updatePost,
@@ -171,5 +184,6 @@ export default {
     likePost,
     commentOnPost,
     deletePost,
-    getAllPosts
+    getAllPosts,
+    getPostById
 }

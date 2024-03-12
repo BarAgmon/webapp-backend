@@ -27,6 +27,7 @@ describe('Post controller tests', () => {
             imgUrl: 'test.jpg',
             content: 'Test content'
         }
+        jest.spyOn(User, 'findById').mockResolvedValueOnce({email: "someUserEmail"} as any);
         jest.spyOn(Post, 'create').mockResolvedValueOnce(newPost as any);
         
         await postController.createPost(req as Request, res as Response);
@@ -46,6 +47,7 @@ describe('Post controller tests', () => {
             json: jest.fn().mockReturnThis()
         };
         
+        jest.spyOn(User, 'findById').mockResolvedValueOnce({email: "someUserEmail"} as any);
         jest.spyOn(Post, 'create').mockResolvedValueOnce(Promise.reject('fail to create'));
         
         await postController.createPost(req as Request, res as Response);
@@ -81,6 +83,7 @@ describe('Post controller tests', () => {
             json: jest.fn().mockReturnThis()
         };
         
+        jest.spyOn(User, 'findById').mockResolvedValueOnce({email: "someUserEmail"} as any);
         jest.spyOn(Post, 'findById').mockResolvedValueOnce({} as any);
         
         await postController.updatePost(req as Request, res as Response);
@@ -409,6 +412,42 @@ describe('Post controller tests', () => {
         await postController.likePost(req as Request, res as Response);
 
         expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    test('Get post by id - success', async () => {
+        let req: Partial<Request> = {
+            query: { postId: 'somePostId' },
+        };
+        req["user"] ={ _id: "someUserId" };
+        let res: Partial<Response> = {
+            status: jest.fn().mockReturnThis(),
+            send: jest.fn().mockReturnThis(),
+            json: jest.fn().mockReturnThis()
+        };
+        
+        jest.spyOn(Post, 'findById').mockResolvedValueOnce({} as any);
+        
+        await postController.getPostById(req as Request, res as Response);
+        
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    test('Get post by id - fail', async () => {
+        let req: Partial<Request> = {
+            query: { postId: 'somePostId' },
+        };
+        req["user"] ={ _id: "someUserId" };
+        let res: Partial<Response> = {
+            status: jest.fn().mockReturnThis(),
+            send: jest.fn().mockReturnThis(),
+            json: jest.fn().mockReturnThis()
+        };
+        
+        jest.spyOn(Post, 'findById').mockResolvedValueOnce(Promise.reject('fail to get'));
+        
+        await postController.getPostById(req as Request, res as Response);
+        
+        expect(res.status).toHaveBeenCalledWith(500);
     });
 
 });
