@@ -16,22 +16,25 @@ const createPost = async (req: Request, res: Response) => {
     const user = req["user"];
     let { imgUrl, content } = req.body;
     if (!imgUrl || !content) {
-        return res.status(400).send("missing fileds");
+        return res.status(400).send("missing fields");
     }
     try {
-    const newPost = await Post.create(
-        {
-            'content': content,
-            'createdAt': new Date(),
-            'user': user,
-            'imgUrl': imgUrl
-        });
-    res.status(201).send(
-        {
-            content: newPost.content,
-            _id: newPost._id,
-            imgUrl: newPost.imgUrl,
-        })
+        let postUser = await User.findById(user["_id"]);
+        const newPost = await Post.create(
+            {
+                'content': content,
+                'createdAt': new Date(),
+                'user': user,
+                'imgUrl': imgUrl,
+                'userName': postUser.email.split('@')[0]
+            });
+        res.status(201).send(
+            {
+                content: newPost.content,
+                _id: newPost._id,
+                imgUrl: newPost.imgUrl,
+                userName: newPost.userName,
+            })
     } catch (error) {
         return res.status(500).json("Internal server error: " + error);
     }
@@ -112,9 +115,6 @@ const likePost = async (req, res) => {
     await checkPostExists(post, postId);
     const userId = user["_id"]
     if (!post.like.includes(userId)) {
-        if (post.dislike.includes(userId)) {
-        await post.updateOne({ $pull: { dislike: userId } });
-        }
         await post.updateOne({ $push: { like: userId } });
         return res.status(200).json("Post has been liked");
     } else {
@@ -127,33 +127,9 @@ const likePost = async (req, res) => {
     }
 };
 
-const dislikePost = async (req, res) => {
-    try {
-    const user = req["user"];
-    const { postId } = req.body;
-    const post = await Post.findById(postId);
-    await checkPostExists(post, postId);
-    const userId = user["_id"]
-    if (!post.dislike.includes(userId)) {
-        if (post.like.includes(userId)) {
-            await post.updateOne({ $pull: { like: userId } });
-        }
-        await post.updateOne({ $push: { dislike: userId } });
-        return res.status(200).json("Post has been disliked");
-    } else {
-        await post.updateOne({ $pull: { dislike: userId } });
-        return res.status(200).json("Post has been undislike");
-    }
-
-    } catch (error) {
-        return res.status(500).json("Internal server error: " + error);
-    }
-};
-
 const commentOnPost = async (req, res) => {
     try {
-        const user = req["user"];
-        const { postId, comment } = req.body;
+        const { postId, comment, user } = req.body;
         const commentObj: IComment = { user, comment };
         const post = await Post.findById(postId);
         await checkPostExists(post, postId);
@@ -191,13 +167,23 @@ const getAllPosts = async (req, res) => {
     }
 };
 
+const getPostById = async (req, res) => {
+    try {
+        const { postId } = req.query;
+        const post = await Post.findById(postId);``
+        return res.status(200).send(post);
+    } catch (error) {
+        return res.status(500).json("Internal server error: " + error);
+    }
+};
+
 export default {
     createPost,
     updatePost,
     getMyPosts,
     likePost,
-    dislikePost,
     commentOnPost,
     deletePost,
-    getAllPosts
+    getAllPosts,
+    getPostById
 }

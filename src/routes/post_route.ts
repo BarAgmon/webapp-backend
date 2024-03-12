@@ -165,29 +165,6 @@ router.get("/myPosts", authMiddleware, postController.getMyPosts);
 router.put("/like", authMiddleware, postController.likePost);
 /**
 * @swagger
-* /post/dislike:
-*   put:
-*     summary: Dislike a post
-*     tags: [Post]
-*     security:
-*       - bearerAuth: []
-*     requestBody:
-*       required: true
-*       content:
-*         application/json:
-*           schema:
-*             $ref: '#/components/schemas/PostID'
-*     responses:
-*       200:
-*         description: The disliked post
-*         content:
-*           application/json:
-*             schema:
-*               type: string
-*/
-router.put("/dislike", authMiddleware, postController.dislikePost);
-/**
-* @swagger
 * components:
 *   schemas:
 *     PostComment:
@@ -195,6 +172,7 @@ router.put("/dislike", authMiddleware, postController.dislikePost);
 *       required:
 *         - postId
 *         - comment
+*         - user
 *       properties:
 *         postId:
 *           type: string
@@ -202,13 +180,18 @@ router.put("/dislike", authMiddleware, postController.dislikePost);
 *         comment:
 *           type: string
 *           description: The comment string
+*         user:
+*           type: string
+*           description: The user string
 *       example:
 *         postId: 1234567abc
+*         comment: nice post
+*         user: some_user
 */
 
 /**
 * @swagger
-* /post/like:
+* /post/comment:
 *   put:
 *     summary: Comment on a post
 *     tags: [Post]
@@ -271,5 +254,44 @@ router.delete("/delete", authMiddleware, postController.deletePost);
 *                 $ref: '#/components/schemas/UpdatePost'
 */
 router.get("/fetch", authMiddleware, postController.getAllPosts);
+/**
+* @swagger
+* components:
+*   schemas:
+*     PostById:
+*       type: object
+*       required:
+*         - postId
+*       post:
+*         postId:
+*           type: string
+*           description: The post id
+*       example:
+*         postId: 1234567abc
+*/
+/**
+* @swagger
+* /post/byId:
+*   get:
+*     summary: Get post by id
+*     tags: [Post]
+*     security:
+*       - bearerAuth: []
+*     parameters:
+*       - in: query
+*         name: postId
+*         schema:
+*           type: string
+*         required: true
+*         description: The post id
+*     responses:
+*       200:
+*         description: The new post
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/components/schemas/PostById'
+*/
+router.get("/byId", authMiddleware, postController.getPostById);
 
 export default router;
